@@ -7,6 +7,11 @@ The driver (orbulation's zed_stereo_ros) publishes /zed/left/image_raw,
 V4L2 image time offset itself, so the SLAM node runs with no offset. It does
 not publish TF, so this launch adds zed_camera_link -> zed_left_link (the
 left optical frame) and reports poses for zed_camera_link.
+
+Replaying a bag recorded before the driver applied the offset:
+
+    ros2 launch pyorbslam3_ros zed2i.launch.py use_sim_time:=true image_time_offset:=-0.08
+    ros2 bag play <bag> --clock
 """
 
 import math
@@ -26,6 +31,9 @@ ARGS = [
     ('driver_params_file', '', "zed_stereo_ros params (default: orbulation's)"),
     ('settings_file', '', 'override the bundled zed2i_<sensor>.yaml'),
     ('tf_mode', 'map_base', 'map_base (handheld) | map_odom (robot with odometry)'),
+    ('image_time_offset', '0.0',
+     's added to image stamps; -0.08 for bags recorded without the driver offset'),
+    ('use_sim_time', 'false', 'true when replaying a bag with --clock'),
     ('rviz', 'false', 'start RViz'),
     ('use_viewer', 'false', 'Pangolin viewer'),
 ]
@@ -40,9 +48,10 @@ def _setup(context):
               'imu': '/zed/imu/data'}
     actions = [
         slam_node(sensor, cfg['settings_file'] or f'zed2i_{sensor}.yaml', remaps,
-                  use_viewer=cfg['use_viewer'],
+                  use_viewer=cfg['use_viewer'], use_sim_time=cfg['use_sim_time'],
                   overrides={'base_frame': 'zed_camera_link', 'tf_mode': cfg['tf_mode'],
-                             'sync_slop': 0.02}),
+                             'sync_slop': 0.02,
+                             'image_time_offset': float(cfg['image_time_offset'])}),
         # body (x forward, z up) -> left optical (z forward, y down)
         static_tf_node('zed_camera_link', 'zed_left_link',
                        rpy=(-math.pi / 2, 0.0, -math.pi / 2)),

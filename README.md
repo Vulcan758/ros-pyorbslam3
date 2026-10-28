@@ -81,6 +81,12 @@ the settings SLAM needs:
   matching.
 - `align_depth` is on for RGB-D.
 
+ZED 2i bags recorded before the driver applied its −80 ms image-time
+correction can be replayed with `use_sim_time:=true image_time_offset:=-0.08`
+and `ros2 bag play <bag> --clock`. A 90 s handheld ZED 2i bag replayed in real
+time tracked 1305 of 1306 processed frames in `stereo_imu` (IMU initialized
+after about 3 s, no resets) and 1607 of 1610 in `stereo`.
+
 Inertial modes need motion to initialize. Rotate and accelerate the camera
 for a few seconds after start; poses appear once the IMU is initialized.
 
