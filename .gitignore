@@ -3,3 +3,5 @@ __pycache__/
 build/
 install/
 log/
+# design notes, kept local
+specs.md

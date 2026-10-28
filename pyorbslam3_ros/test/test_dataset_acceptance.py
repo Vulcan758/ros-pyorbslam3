@@ -1,4 +1,4 @@
-"""End-to-end acceptance on TUM-VI room1 (specs.md 9.2).
+"""End-to-end acceptance on TUM-VI room1.
 
 Skipped unless PYORBSLAM3_ROS_TUMVI points at dataset-room1_512_16. Modes are
 taken from PYORBSLAM3_ROS_MODES (comma-separated, default stereo_imu). Each

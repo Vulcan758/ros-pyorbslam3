@@ -13,8 +13,6 @@ wheel ships it.
 - Presets for TUM-VI, EuRoC, RealSense D435i and ZED 2i
 - ROS 2 **Humble** (Ubuntu 22.04) and **Jazzy** (Ubuntu 24.04)
 
-The full design is in [specs.md](specs.md).
-
 ## Install
 
 ```bash
@@ -219,3 +217,34 @@ The test is `pyorbslam3_ros/test/test_dataset_acceptance.py`. Run it with
 ## License
 
 GPL-3.0-or-later, like ORB-SLAM3 and pyorbslam3.
+
+## TODO: hands-on hardware tests
+
+These need a person moving a real camera, so CI can't run them. Record the
+results under [Results](#results) as each one passes.
+
+- [ ] **D435i, `stereo_imu`, handheld loop**
+  - Run: `ros2 launch pyorbslam3_ros d435i.launch.py sensor:=stereo_imu start_camera:=true rviz:=true`
+  - Walk a closed loop of a few metres and come back to the start.
+  - Pass:
+    - IMU initializes within 5 s of moving.
+    - No map resets.
+    - The RViz path closes on itself.
+- [ ] **D435i, `stereo`**
+  - Same loop with `sensor:=stereo`.
+  - Pass: no map resets, and the path closes.
+- [ ] **D435i, `rgbd` and `rgbd_imu`**
+  - Run with `sensor:=rgbd`, then `sensor:=rgbd_imu`.
+  - Pass:
+    - No depth-scale warning at startup.
+    - Moving the camera a measured distance (e.g. 1 m) moves the pose by that
+      distance.
+- [ ] **ZED 2i live, `stereo_imu`**
+  - Uses orbulation's SDK-less driver. Run:
+    `ros2 launch pyorbslam3_ros zed2i.launch.py sensor:=stereo_imu start_camera:=true rviz:=true`
+  - Pass: IMU initializes within 5 s of moving, no map resets, and a closed loop
+    closes.
+  - The recorded `zed_wave` bag already passes (1305/1306 frames, no resets).
+- [ ] **Settings generated from `CameraInfo` (planned)**
+  - Once settings generation from `CameraInfo` + TF exists, repeat the D435i and
+    ZED 2i checks with generated settings instead of the bundled YAML files.

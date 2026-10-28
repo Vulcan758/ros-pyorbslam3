@@ -8,8 +8,8 @@ remapped at launch:
     rgbd:   rgb/image, depth/image   (+ imu for rgbd_imu)
 
 Outputs (~/odometry, ~/pose, ~/path, ~/tracked_points, ~/tracking_status, TF)
-are expressed for `base_frame` in `map_frame` following REP-105; see specs.md
-section 5 for the frame math.
+are expressed for `base_frame` in `map_frame` following REP-105; the README's
+Frames section describes the map frame per mode.
 """
 
 import importlib.metadata
@@ -147,7 +147,7 @@ class SlamNode(Node):
             self.slam.activate_localization_mode()
             self.localization_mode = True
 
-        # -- callback groups (see specs.md 4.7) ---------------------------
+        # -- callback groups ---------------------------------------------
         self.slam_group = MutuallyExclusiveCallbackGroup()
         self.imu_group = ReentrantCallbackGroup()
         self.timer_group = MutuallyExclusiveCallbackGroup()
@@ -334,7 +334,7 @@ class SlamNode(Node):
         self._process(rgb, lambda imu, t: self.slam.track_rgbd(
             to_gray(rgb), to_depth(depth), t, imu=imu))
 
-    # -- per-frame pipeline (specs.md 4.8) -------------------------------------------
+    # -- per-frame pipeline ----------------------------------------------------------
 
     def _process(self, msg: Image, track):
         # outputs carry the exact (offset) image stamp; ORB-SLAM3 gets float seconds
