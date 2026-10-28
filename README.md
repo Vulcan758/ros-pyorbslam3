@@ -193,9 +193,10 @@ What the ATE columns measure:
   Before later bundle adjustments it is less accurate. Direct pyorbslam3 online
   poses score 3.7 cm on `stereo_imu`.
 
-Fisheye stereo (TUM-VI) needs pyorbslam3 with patches 0003–0005, which fix
-upstream ORB-SLAM3 out-of-bounds reads. Earlier wheels segfault intermittently
-in `stereo`/`stereo_imu` on fisheye cameras.
+Fisheye stereo (TUM-VI) needs pyorbslam3 ≥ 0.1.3, which fixes upstream
+ORB-SLAM3 out-of-bounds reads. Earlier versions segfault intermittently in
+`stereo`/`stereo_imu` on fisheye cameras. The results above were confirmed with
+the 0.1.3 wheel from PyPI.
 
 The test is `pyorbslam3_ros/test/test_dataset_acceptance.py`. Run it with
 `PYORBSLAM3_ROS_TUMVI=/path/to/dataset-room1_512_16 PYORBSLAM3_ROS_MODES=stereo_imu,mono_imu,stereo`.
