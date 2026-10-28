@@ -1,0 +1,41 @@
+# All slam_node parameters with their defaults. Copy, edit, and pass with
+#   ros2 launch pyorbslam3_ros slam.launch.py params_file:=/path/to/this.yaml ...
+# (sensor/settings_file given as launch arguments override the values here).
+orbslam3:
+  ros__parameters:
+    sensor: "stereo_imu"            # mono | mono_imu | stereo | stereo_imu | rgbd | rgbd_imu
+    settings_file: ""               # ORB-SLAM3 YAML; path or bundled name (tumvi_stereo_imu.yaml)
+    vocabulary_file: ""             # "" = pyorbslam3.vocabulary_path() (auto-download)
+    use_viewer: false               # Pangolin window
+    localization_mode: false        # start without mapping
+
+    map_frame: "map"
+    odom_frame: "odom"
+    base_frame: "base_link"
+    camera_frame: ""                # "" = image header.frame_id (optical frame)
+    publish_tf: true
+    tf_mode: "map_odom"             # map_odom (needs odom -> base_link) | map_base
+    tf_timeout: 0.1                 # s, odom -> base lookup at frame time
+
+    image_time_offset: 0.0          # s, added to image stamps
+    image_queue_size: 2             # small = drop stale frames when tracking is slow
+    reliable_qos: false             # true: reliable image/IMU subscriptions (needs a reliable publisher)
+    sync_queue_size: 10
+    sync_slop: 0.01                 # s, stereo / RGB-D pair matching
+    imu_wait_timeout: 0.15          # s, wait for IMU to cover the frame time
+    imu_buffer_duration: 5.0        # s of unconsumed IMU kept
+
+    publish_path: true
+    path_max_length: 10000          # poses, 0 = unlimited
+    path_publish_period: 0.2        # s (wall)
+    publish_tracked_points: true
+    tracked_points_every_n: 1
+    publish_before_imu_init: false  # inertial: publish before the map is gravity-aligned
+
+    pose_covariance_diagonal: [1.0e-4, 1.0e-4, 1.0e-4, 1.0e-4, 1.0e-4, 1.0e-4]
+    twist_covariance_diagonal: [1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2, 1.0e-2]
+    twist_max_dt: 0.5               # s, max gap for finite-difference twist
+
+    status_log_period: 5.0          # s, 0 disables
+    shutdown_trajectory_path: ""    # save on shutdown if set
+    shutdown_trajectory_format: "euroc"   # tum | euroc | kitti

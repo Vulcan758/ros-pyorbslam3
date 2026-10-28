@@ -1,0 +1,7 @@
+# Save the estimated trajectory with ORB-SLAM3's own writers.
+string path                   # relative paths resolve against the node's working directory
+string format                 # "tum" | "euroc" | "kitti"
+bool keyframes_only           # tum/euroc only
+---
+bool success
+string message                # absolute path written, or the rejection reason

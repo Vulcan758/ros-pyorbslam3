@@ -1,0 +1,7 @@
+# pyorbslam3 is distributed on PyPI only. Register this file with rosdep:
+#   echo "yaml file://$PWD/rosdep/pyorbslam3.yaml" | sudo tee /etc/ros/rosdep/sources.list.d/50-pyorbslam3.list
+#   rosdep update
+python3-pyorbslam3-pip:
+  ubuntu:
+    pip:
+      packages: [pyorbslam3]

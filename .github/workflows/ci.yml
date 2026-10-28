@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [humble, jazzy]
+    runs-on: ubuntu-latest
+    container: ros:${{ matrix.distro }}-ros-base
+    env:
+      PIP_BREAK_SYSTEM_PACKAGES: "1"   # Ubuntu 24.04 (Jazzy) system pip is externally managed
+      DEBIAN_FRONTEND: noninteractive
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ws/src/ros-pyorbslam3
+
+      - name: System packages
+        run: |
+          apt-get update
+          apt-get install -y python3-pip libgl1 libegl1 libopengl0 libsm6 libice6 libxext6 libx11-6
+
+      - name: rosdep (including the pip-only pyorbslam3 key)
+        run: |
+          echo "yaml file://$GITHUB_WORKSPACE/ws/src/ros-pyorbslam3/rosdep/pyorbslam3.yaml" \
+            > /etc/ros/rosdep/sources.list.d/50-pyorbslam3.list
+          rosdep update --rosdistro ${{ matrix.distro }}
+          rosdep install --from-paths ws/src --ignore-src -y --rosdistro ${{ matrix.distro }}
+          python3 -c "import pyorbslam3; print('pyorbslam3', pyorbslam3.__file__)"
+
+      - name: Build
+        working-directory: ws
+        run: |
+          source /opt/ros/${{ matrix.distro }}/setup.bash
+          colcon build --event-handlers console_cohesion+
+
+      - name: Unit tests and linters
+        working-directory: ws
+        run: |
+          source install/setup.bash
+          colcon test --packages-select pyorbslam3_ros --event-handlers console_direct+
+          colcon test-result --verbose
+
+      - name: Cache ORB vocabulary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pyorbslam3
+          key: orbvoc-v1
+
+      - name: Smoke test (start node, call a service, shut down)
+        working-directory: ws
+        run: |
+          source install/setup.bash
+          ./src/ros-pyorbslam3/scripts/smoke_test.sh

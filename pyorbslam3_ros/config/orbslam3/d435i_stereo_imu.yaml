@@ -1,0 +1,116 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# RealSense D435i - stereo-inertial (infrared pair + BMI085 IMU)
+#
+# Calibration read from the factory EEPROM of unit SN 215222073406 on 2026-07-21
+# with `rs-enumerate-devices -c`. If you swap to a different D435i, re-read it:
+#   rs-enumerate-devices -c
+# and update Camera1.*, Stereo.b and IMU.T_b_c1 below.
+#
+# Run the driver with depth_module.emitter_enabled:=0 -- the projected IR dot
+# pattern is fixed in the world but the SLAM front end sees it as texture that
+# moves with the camera, which wrecks feature matching.
+#
+# NOTE ON Camera.type: the infra1/infra2 streams are already rectified and
+# undistorted by the ASIC, so "Rectified" looks like the natural choice, but it
+# segfaults ORB-SLAM3. Settings::readCamera2() only fills originalCalib2_ for
+# the PinHole and KannalaBrandt branches, while operator<<(Settings) dereferences
+# it unconditionally for any stereo sensor -- so printing the settings walks an
+# uninitialised pointer. The stock Examples/Stereo-Inertial/RealSense_D435i.yaml
+# crashes for the same reason.
+# Using "PinHole" with an explicit Camera2 block avoids it: because the pair is
+# already rectified and distortion is zero, the stereo rectification ORB-SLAM3
+# then performs resolves to an identity remap, so the geometry is unchanged.
+#--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# infra1 intrinsics @ 640x480 (already rectified, so no distortion terms)
+Camera1.fx: 389.736724853516
+Camera1.fy: 389.736724853516
+Camera1.cx: 320.408996582031
+Camera1.cy: 238.835815429688
+
+# infra2 shares infra1's intrinsics exactly -- that is what "hardware rectified" means
+Camera2.fx: 389.736724853516
+Camera2.fy: 389.736724853516
+Camera2.cx: 320.408996582031
+Camera2.cy: 238.835815429688
+
+# Pose of infra2 in the infra1 frame: pure baseline shift along +x.
+# ORB-SLAM3 takes Stereo.b from the norm of this translation.
+Stereo.T_c1_c2: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [1.0, 0.0, 0.0, 0.050001285970211,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 1.0, 0.0,
+          0.0, 0.0, 0.0, 1.0]
+
+# Camera resolution
+Camera.width: 640
+Camera.height: 480
+
+# Camera frames per second
+Camera.fps: 30
+
+# Infrared images are greyscale, so this is ignored
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+Stereo.ThDepth: 40.0
+
+#--------------------------------------------------------------------------------------------
+# IMU Parameters
+#--------------------------------------------------------------------------------------------
+# Transformation from body-frame (imu) to left camera, i.e. p_imu = T_b_c1 * p_cam.
+# This is librealsense's "Extrinsic from Infrared 1 To Gyro" for this unit.
+# The BMI085 axes are aligned with the infra1 optical frame, so rotation is identity
+# and only the ~5/5/12 mm lever arm remains.
+IMU.T_b_c1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [1.0, 0.0, 0.0, -0.00552,
+          0.0, 1.0, 0.0,  0.00510,
+          0.0, 0.0, 1.0,  0.01174,
+          0.0, 0.0, 0.0,  1.0]
+
+# Do not insert KFs when recently lost
+IMU.InsertKFsWhenLost: 0
+
+# IMU noise. Deliberately inflated ~10x over the BMI085 datasheet values, which is
+# what the stock ORB-SLAM3 RealSense configs do -- it absorbs the driver's
+# timestamp jitter and the linear-interpolation IMU merge.
+IMU.NoiseGyro: 1e-3 # rad/s^0.5
+IMU.NoiseAcc: 1e-2 # m/s^1.5
+IMU.GyroWalk: 1e-6 # rad/s^1.5
+IMU.AccWalk: 1e-4 # m/s^2.5
+# Must match gyro_fps/accel_fps used by the driver
+IMU.Frequency: 200.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+ORBextractor.nFeatures: 1250
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0

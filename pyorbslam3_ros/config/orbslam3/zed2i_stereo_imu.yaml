@@ -1,0 +1,224 @@
+%YAML:1.0
+
+# #--------------------------------------------------------------------------------------------
+# # ZED 2i VGA - Unrectified Stereo Parameters
+# #--------------------------------------------------------------------------------------------
+# File.version: "1.0"
+# Camera.type: "PinHole"
+
+# # ZED VGA Resolution
+# Camera.width: 672
+# Camera.height: 376
+
+# # Camera frames per second
+# Camera.fps: 30
+
+# # Color order of the images (0: BGR, 1: RGB)
+# Camera.RGB: 1
+
+# #--------------------------------------------------------------------------------------------
+# # LEFT CAMERA CALIBRATION (Camera 1)
+# #--------------------------------------------------------------------------------------------
+# Camera1.fx: 477.525
+# Camera1.fy: 477.805
+# Camera1.cx: 329.005
+# Camera1.cy: 190.107
+
+# Camera1.k1: -0.0663476
+# Camera1.k2: -0.0353098
+# Camera1.p1: -9.25829e-05
+# Camera1.p2: -9.31486e-05
+# Camera1.k3: -0.0344863
+
+# #--------------------------------------------------------------------------------------------
+# # RIGHT CAMERA CALIBRATION (Camera 2)
+# #--------------------------------------------------------------------------------------------
+# Camera2.fx: 477.5
+# Camera2.fy: 477.855
+# Camera2.cx: 340.765
+# Camera2.cy: 195.1765
+
+# Camera2.k1: -0.0668987
+# Camera2.k2: -0.032045
+# Camera2.p1: 0.000313399
+# Camera2.p2: -0.000125787
+# Camera2.k3: -0.0370792
+
+# #--------------------------------------------------------------------------------------------
+# # STEREO EXTRINSICS
+# #--------------------------------------------------------------------------------------------
+# # Baseline in meters (119.971 mm / 1000)
+# Stereo.b: 0.11997
+
+# # Baseline times fx (0.11997 * 477.525)
+# Camera.bf: 57.289
+
+# # Close/Far threshold. Baseline times.
+# Stereo.ThDepth: 40.0
+
+# # Right-to-Left Camera Transformation Matrix (Stereo.T_c1_c2) for ORB-SLAM3 unrectified support.
+# # Approximated purely using the Tx (Baseline) in meters. Ty and Tz are negligible.
+# Stereo.T_c1_c2: !!opencv-matrix
+#    rows: 4
+#    cols: 4
+#    dt: f
+#    data: [ 1.0, 0.0, 0.0, -0.119971,
+#            0.0, 1.0, 0.0,  0.0,
+#            0.0, 0.0, 1.0,  0.0,
+#            0.0, 0.0, 0.0,  1.0 ]
+
+# #--------------------------------------------------------------------------------------------
+# # ORB Parameters
+# #--------------------------------------------------------------------------------------------
+# # ORB Extractor: Number of features per image
+# ORBextractor.nFeatures: 1000
+
+# # ORB Extractor: Scale factor between levels in the scale pyramid
+# ORBextractor.scaleFactor: 1.2
+
+# # ORB Extractor: Number of levels in the scale pyramid
+# ORBextractor.nLevels: 8
+
+# # ORB Extractor: Fast threshold
+# ORBextractor.iniThFAST: 20
+# ORBextractor.minThFAST: 7
+
+# #--------------------------------------------------------------------------------------------
+# # Viewer Parameters
+# #--------------------------------------------------------------------------------------------
+# Viewer.KeyFrameSize: 0.05
+# Viewer.KeyFrameLineWidth: 1.0
+# Viewer.GraphLineWidth: 0.9
+# Viewer.PointSize: 2.0
+# Viewer.CameraSize: 0.08
+# Viewer.CameraLineWidth: 3.0
+# Viewer.ViewpointX: 0.0
+# Viewer.ViewpointY: -0.7
+# Viewer.ViewpointZ: -1.8
+# Viewer.ViewpointF: 500.0
+
+# %YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# ZED 2i VGA (672x376) - Stereo-Inertial config for ORB-SLAM3
+# Unrectified two-camera PinHole model + IMU block.
+# NOTE: IMU.T_b_c1 is an APPROXIMATE placeholder, not a per-unit calibration.
+#--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# Resolution / stream properties
+Camera.width: 672
+Camera.height: 376
+Camera.fps: 30
+# Color order of the images (0: BGR, 1: RGB)
+Camera.RGB: 1
+
+#--------------------------------------------------------------------------------------------
+# LEFT CAMERA CALIBRATION (Camera 1)
+#--------------------------------------------------------------------------------------------
+Camera1.fx: 477.525
+Camera1.fy: 477.805
+Camera1.cx: 329.005
+Camera1.cy: 190.107
+
+Camera1.k1: -0.0663476
+Camera1.k2: -0.0353098
+Camera1.p1: -9.25829e-05
+Camera1.p2: -9.31486e-05
+Camera1.k3: -0.0344863
+
+#--------------------------------------------------------------------------------------------
+# RIGHT CAMERA CALIBRATION (Camera 2)
+#--------------------------------------------------------------------------------------------
+Camera2.fx: 477.5
+Camera2.fy: 477.855
+Camera2.cx: 340.765
+Camera2.cy: 195.1765
+
+Camera2.k1: -0.0668987
+Camera2.k2: -0.032045
+Camera2.p1: 0.000313399
+Camera2.p2: -0.000125787
+Camera2.k3: -0.0370792
+
+#--------------------------------------------------------------------------------------------
+# STEREO EXTRINSICS
+#--------------------------------------------------------------------------------------------
+# Close/Far depth threshold (in units of the stereo baseline)
+Stereo.ThDepth: 40.0
+
+# Baseline in meters (119.971 mm / 1000). Note: with Camera.type "PinHole" the new
+# ORB-SLAM3 parser derives the baseline from Stereo.T_c1_c2 below; Stereo.b / Camera.bf
+# are kept for reference and ignored by that path.
+Stereo.b: 0.11997
+Camera.bf: 57.289
+
+# Right-to-Left Camera Transformation Matrix (Stereo.T_c1_c2) for unrectified stereo.
+# Approximated using Tx (baseline) only; inter-camera rotation and Ty/Tz assumed ~0.
+Stereo.T_c1_c2: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [ 1.0, 0.0, 0.0, -0.119971,
+           0.0, 1.0, 0.0,  0.0,
+           0.0, 0.0, 1.0,  0.0,
+           0.0, 0.0, 0.0,  1.0 ]
+
+#--------------------------------------------------------------------------------------------
+# IMU Parameters
+#--------------------------------------------------------------------------------------------
+# Transformation from camera (c1 = left) to body-frame (IMU).
+# Rotation CALIBRATED 2026-07-09 from a handheld recording of this unit
+# (SN 32957407): gyro-vs-optical-flow Wahba fit, median residual 0.28,
+# gravity-consistent. Axis mapping ~ X_imu=Y_cam(down), Y_imu=X_cam(right),
+# Z_imu=-Z_cam. Translation is NOT calibrated (set to zero; the ~2 cm true
+# lever arm is a second-order effect compared to rotation).
+IMU.T_b_c1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [ 0.013030,  0.999813, -0.014289,  0.0,
+           0.999606, -0.012669,  0.025042,  0.0,
+           0.024857, -0.014610, -0.999584,  0.0,
+           0.0,       0.0,       0.0,       1.0]
+
+# Noise terms — derived from ZED 2i datasheet (Rev1.2)
+# Datasheet lists: gyro noise 0.16 dps, accel noise 3.2 mg, IMU ODR 400 Hz.
+# Those read as ~RMS figures; dividing by sqrt(ODR/2) ~= sqrt(200) gives spectral densities:
+IMU.NoiseGyro:  0.0002      # rad/s^0.5   (0.16 dps / sqrt(200) -> 0.0113 dps/sqrt(Hz))
+IMU.NoiseAcc:   0.0022      # m/s^1.5     (3.2 mg  / sqrt(200) -> 0.226 mg/sqrt(Hz))
+IMU.GyroWalk:   0.000022    # rad/s^1.5   NOT in datasheet - typical MEMS value
+IMU.AccWalk:    0.0008      # m/s^2.5     NOT in datasheet - typical MEMS value
+IMU.Frequency:  300.0       # measured hardware-timestamp rate of zed-open-capture stream
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1000
+
+# ORB Extractor: Scale factor between levels in the scale pyramid
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500.0

@@ -1,0 +1,93 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# RealSense D435i - RGBD-inertial (colour + depth aligned to colour + BMI085 IMU)
+#
+# Calibration read from the factory EEPROM of unit SN 215222073406 on 2026-07-21
+# with `rs-enumerate-devices -c`.
+#
+# The depth topic MUST be depth aligned to colour
+# (/camera/camera/aligned_depth_to_color/image_raw, driver arg align_depth.enable:=true).
+# The raw /camera/camera/depth/image_rect_raw stream lives in the infra1 frame and is
+# offset ~15 mm from the colour image, so every depth lookup would be wrong.
+#
+# Note the colour camera is rolling shutter; prefer stereo-inertial/d435i.yaml for
+# handheld/dynamic use and keep this for slower RGBD work.
+#--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# Colour intrinsics @ 640x480
+Camera1.fx: 605.950073242188
+Camera1.fy: 605.842407226562
+Camera1.cx: 324.970062255859
+Camera1.cy: 250.569473266602
+
+# The driver publishes an already-undistorted colour image
+Camera1.k1: 0.0
+Camera1.k2: 0.0
+Camera1.p1: 0.0
+Camera1.p2: 0.0
+
+Camera.width: 640
+Camera.height: 480
+Camera.fps: 30
+
+# Colour images arrive as rgb8 from the driver
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+Stereo.ThDepth: 40.0
+# Virtual stereo baseline used to turn depth into disparity: the depth baseline
+Stereo.b: 0.050001285970211
+
+# Driver publishes 16UC1 depth in millimetres
+RGBD.DepthMapFactor: 1000.0
+
+#--------------------------------------------------------------------------------------------
+# IMU Parameters
+#--------------------------------------------------------------------------------------------
+# Transformation from body-frame (imu) to colour camera, i.e. p_imu = T_b_c1 * p_cam.
+# librealsense "Extrinsic from Color To Gyro" for this unit.
+IMU.T_b_c1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [ 0.999731, -0.0224073,  -0.00603582, -0.0204935,
+           0.0223982, 0.999748,   -0.00157991,  0.0048359,
+           0.0060697, 0.00144429,  0.999981,    0.0112561,
+           0.0,       0.0,         0.0,         1.0]
+
+# Do not insert KFs when recently lost
+IMU.InsertKFsWhenLost: 0
+
+IMU.NoiseGyro: 1e-3 # rad/s^0.5
+IMU.NoiseAcc: 1e-2 # m/s^1.5
+IMU.GyroWalk: 1e-6 # rad/s^1.5
+IMU.AccWalk: 1e-4 # m/s^2.5
+# Must match gyro_fps/accel_fps used by the driver
+IMU.Frequency: 200.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+ORBextractor.nFeatures: 1250
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0

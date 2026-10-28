@@ -1,0 +1,66 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# RealSense D435i - stereo, no IMU (infrared pair)
+#
+# Same optics as stereo-inertial/d435i.yaml, just without the IMU block.
+# Calibration read from unit SN 215222073406 on 2026-07-21 (rs-enumerate-devices -c).
+# Run the driver with depth_module.emitter_enabled:=0.
+#--------------------------------------------------------------------------------------------
+# Camera.type is "PinHole" rather than "Rectified" to dodge an upstream
+# ORB-SLAM3 segfault; see the long note in ../stereo-inertial/d435i.yaml.
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# infra1 intrinsics @ 640x480 (already rectified, so no distortion terms)
+Camera1.fx: 389.736724853516
+Camera1.fy: 389.736724853516
+Camera1.cx: 320.408996582031
+Camera1.cy: 238.835815429688
+
+# infra2 shares infra1's intrinsics exactly
+Camera2.fx: 389.736724853516
+Camera2.fy: 389.736724853516
+Camera2.cx: 320.408996582031
+Camera2.cy: 238.835815429688
+
+# Pose of infra2 in the infra1 frame: pure baseline shift along +x
+Stereo.T_c1_c2: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+   data: [1.0, 0.0, 0.0, 0.050001285970211,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 1.0, 0.0,
+          0.0, 0.0, 0.0, 1.0]
+
+Camera.width: 640
+Camera.height: 480
+Camera.fps: 30
+Camera.RGB: 1
+
+Stereo.ThDepth: 40.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+ORBextractor.nFeatures: 1250
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0

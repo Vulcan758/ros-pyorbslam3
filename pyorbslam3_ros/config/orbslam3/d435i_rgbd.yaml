@@ -1,0 +1,62 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# RealSense D435i - RGBD, no IMU (colour + depth aligned to colour)
+#
+# Calibration read from the factory EEPROM of unit SN 215222073406 on 2026-07-21
+# with `rs-enumerate-devices -c`.
+#
+# The depth topic MUST be depth aligned to colour
+# (/camera/camera/aligned_depth_to_color/image_raw, driver arg align_depth.enable:=true).
+#--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# Colour intrinsics @ 640x480
+Camera1.fx: 605.950073242188
+Camera1.fy: 605.842407226562
+Camera1.cx: 324.970062255859
+Camera1.cy: 250.569473266602
+
+# The driver publishes an already-undistorted colour image
+Camera1.k1: 0.0
+Camera1.k2: 0.0
+Camera1.p1: 0.0
+Camera1.p2: 0.0
+
+Camera.width: 640
+Camera.height: 480
+Camera.fps: 30
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+Stereo.ThDepth: 40.0
+# Virtual stereo baseline used to turn depth into disparity: the depth baseline
+Stereo.b: 0.050001285970211
+
+# Driver publishes 16UC1 depth in millimetres
+RGBD.DepthMapFactor: 1000.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+ORBextractor.nFeatures: 1250
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0
